@@ -1,1 +1,8 @@
-
+{
+  "name": "jarvis-mobile-ai",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "openai": "^5.19.1"
+  }
+}
