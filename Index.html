@@ -6,6 +6,10 @@
   <title>J.A.R.V.I.S</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -17,111 +21,138 @@
       align-items: center;
     }
 
-    .jarvis {
+    .container {
       width: 90%;
-      max-width: 500px;
+      max-width: 450px;
       text-align: center;
     }
 
     h1 {
-      letter-spacing: 6px;
+      letter-spacing: 7px;
+      text-shadow: 0 0 15px #00eaff;
     }
 
-    #reply {
-      min-height: 80px;
-      margin: 25px 0;
-      padding: 20px;
+    .setup {
+      margin-top: 30px;
+      padding: 25px;
       border: 1px solid #00eaff;
-      border-radius: 10px;
+      border-radius: 12px;
       background: #031016;
+      box-shadow: 0 0 20px #003b45;
     }
 
     input {
-      width: 65%;
+      width: 100%;
+      margin-top: 15px;
       padding: 14px;
       border: 1px solid #00eaff;
       border-radius: 8px;
       background: #020509;
       color: white;
+      outline: none;
     }
 
     button {
+      width: 100%;
+      margin-top: 15px;
       padding: 14px;
-      margin-left: 5px;
       border: 1px solid #00eaff;
       border-radius: 8px;
       background: #031016;
       color: #00eaff;
+      font-weight: bold;
+    }
+
+    #jarvis {
+      display: none;
+    }
+
+    #status {
+      margin-top: 15px;
+      font-size: 13px;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="jarvis">
+<div class="container">
 
-    <h1>J.A.R.V.I.S</h1>
+  <h1>J.A.R.V.I.S</h1>
 
-    <p>● SYSTEM ONLINE</p>
+  <!-- FIRST LAUNCH SETUP -->
+  <div class="setup" id="setup">
 
-    <div id="reply">
-      Awaiting command...
-    </div>
+    <h2>INITIAL SETUP</h2>
+
+    <p>Enter your OpenAI API key</p>
 
     <input
-      id="message"
-      type="text"
-      placeholder="Talk to JARVIS"
+      id="apiKey"
+      type="password"
+      placeholder="OpenAI API key"
     >
 
-    <button onclick="sendMessage()">SEND</button>
+    <button onclick="connectJarvis()">
+      CONNECT J.A.R.V.I.S
+    </button>
+
+    <div id="status"></div>
 
   </div>
 
-  <script>
-    async function sendMessage() {
+  <!-- JARVIS -->
+  <div id="jarvis">
 
-      const input = document.getElementById("message");
-      const reply = document.getElementById("reply");
+    <h2>SYSTEM ONLINE</h2>
 
-      const message = input.value.trim();
+    <p>Your J.A.R.V.I.S body is ready.</p>
 
-      if (!message) return;
+  </div>
 
-      reply.textContent = "J.A.R.V.I.S is thinking...";
+</div>
 
-      try {
+<script>
 
-        const response = await fetch("/api/chat", {
-          method: "POST",
+function connectJarvis() {
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+  const key = document.getElementById("apiKey").value.trim();
+  const status = document.getElementById("status");
 
-          body: JSON.stringify({
-            message: message
-          })
-        });
+  if (!key) {
+    status.textContent = "Please enter your API key.";
+    return;
+  }
 
-        const data = await response.json();
+  /*
+    TEMPORARY SETUP ONLY.
 
-        if (data.reply) {
-          reply.textContent = data.reply;
-        } else {
-          reply.textContent = "J.A.R.V.I.S: " + data.error;
-        }
+    We will replace this with secure Android
+    storage when we turn J.A.R.V.I.S into
+    the actual Android app.
+  */
 
-      } catch (error) {
+  localStorage.setItem("jarvisSetup", "true");
 
-        reply.textContent =
-          "Connection error. Brain is not connected.";
+  document.getElementById("setup").style.display = "none";
+  document.getElementById("jarvis").style.display = "block";
+}
 
-      }
 
-      input.value = "";
-    }
-  </script>
+// Check whether setup was completed
+
+window.onload = function() {
+
+  if (localStorage.getItem("jarvisSetup") === "true") {
+
+    document.getElementById("setup").style.display = "none";
+    document.getElementById("jarvis").style.display = "block";
+
+  }
+
+};
+
+</script>
 
 </body>
 </html>
