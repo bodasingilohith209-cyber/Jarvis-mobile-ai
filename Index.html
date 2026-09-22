@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>J.A.R.V.I.S</title>
 
   <style>
@@ -22,54 +23,129 @@
     }
 
     .container {
-      width: 90%;
-      max-width: 450px;
+      width: 92%;
+      max-width: 500px;
       text-align: center;
     }
 
     h1 {
-      letter-spacing: 7px;
-      text-shadow: 0 0 15px #00eaff;
+      font-size: 32px;
+      letter-spacing: 8px;
+      text-shadow: 0 0 20px #00eaff;
     }
 
-    .setup {
-      margin-top: 30px;
-      padding: 25px;
-      border: 1px solid #00eaff;
-      border-radius: 12px;
-      background: #031016;
-      box-shadow: 0 0 20px #003b45;
+    .reactor {
+      width: 170px;
+      height: 170px;
+      margin: 35px auto;
+      border: 3px solid #00eaff;
+      border-radius: 50%;
+      box-shadow:
+        0 0 20px #00eaff,
+        inset 0 0 25px #00eaff;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      animation: pulse 2s infinite;
     }
 
-    input {
+    .core {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #00eaff;
+      box-shadow: 0 0 35px #00eaff;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.08);
+      }
+    }
+
+    #status {
+      margin: 20px 0;
+      font-size: 14px;
+    }
+
+    #chat {
+      display: none;
+    }
+
+    #setup {
+      display: none;
+    }
+
+    textarea {
       width: 100%;
-      margin-top: 15px;
-      padding: 14px;
-      border: 1px solid #00eaff;
-      border-radius: 8px;
-      background: #020509;
+      height: 90px;
+      resize: none;
+      padding: 15px;
+
+      background: #030a0f;
       color: white;
+
+      border: 1px solid #00eaff;
+      border-radius: 10px;
+
       outline: none;
     }
 
     button {
       width: 100%;
-      margin-top: 15px;
       padding: 14px;
-      border: 1px solid #00eaff;
-      border-radius: 8px;
+      margin-top: 12px;
+
       background: #031016;
       color: #00eaff;
+
+      border: 1px solid #00eaff;
+      border-radius: 10px;
+
       font-weight: bold;
+      cursor: pointer;
     }
 
-    #jarvis {
-      display: none;
+    button:active {
+      transform: scale(0.98);
     }
 
-    #status {
+    #reply {
+      margin-top: 20px;
+      min-height: 50px;
+      padding: 15px;
+
+      border: 1px solid #063b45;
+      border-radius: 10px;
+
+      color: white;
+      text-align: left;
+    }
+
+    .setup-box {
+      padding: 25px;
+      border: 1px solid #00eaff;
+      border-radius: 12px;
+      background: #031016;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
       margin-top: 15px;
-      font-size: 13px;
+
+      background: #020509;
+      color: white;
+
+      border: 1px solid #00eaff;
+      border-radius: 8px;
+      outline: none;
     }
   </style>
 </head>
@@ -80,74 +156,141 @@
 
   <h1>J.A.R.V.I.S</h1>
 
-  <!-- FIRST LAUNCH SETUP -->
-  <div class="setup" id="setup">
+  <!-- FIRST LAUNCH -->
+  <div id="setup">
 
-    <h2>INITIAL SETUP</h2>
+    <div class="setup-box">
 
-    <p>Enter your OpenAI API key</p>
+      <h2>INITIAL SETUP</h2>
 
-    <input
-      id="apiKey"
-      type="password"
-      placeholder="OpenAI API key"
-    >
+      <p>Enter your OpenAI API key</p>
 
-    <button onclick="connectJarvis()">
-      CONNECT J.A.R.V.I.S
-    </button>
+      <input
+        id="apiKey"
+        type="password"
+        placeholder="OpenAI API key"
+      >
 
-    <div id="status"></div>
+      <button onclick="connectJarvis()">
+        CONNECT J.A.R.V.I.S
+      </button>
+
+      <p id="setupStatus"></p>
+
+    </div>
 
   </div>
 
-  <!-- JARVIS -->
-  <div id="jarvis">
 
-    <h2>SYSTEM ONLINE</h2>
+  <!-- JARVIS BODY -->
+  <div id="chat">
 
-    <p>Your J.A.R.V.I.S body is ready.</p>
+    <div class="reactor">
+      <div class="core"></div>
+    </div>
+
+    <div id="status">
+      ● J.A.R.V.I.S ONLINE
+    </div>
+
+    <textarea
+      id="message"
+      placeholder="Speak to J.A.R.V.I.S..."
+    ></textarea>
+
+    <button onclick="sendMessage()">
+      SEND
+    </button>
+
+    <div id="reply">
+      J.A.R.V.I.S is waiting...
+    </div>
 
   </div>
 
 </div>
 
+
 <script>
 
 function connectJarvis() {
 
-  const key = document.getElementById("apiKey").value.trim();
-  const status = document.getElementById("status");
+  const key =
+    document.getElementById("apiKey").value.trim();
+
+  const status =
+    document.getElementById("setupStatus");
 
   if (!key) {
-    status.textContent = "Please enter your API key.";
+    status.textContent =
+      "Please enter your API key.";
+
     return;
   }
 
   /*
-    TEMPORARY SETUP ONLY.
+    For now this only remembers that
+    setup has been completed.
 
-    We will replace this with secure Android
-    storage when we turn J.A.R.V.I.S into
-    the actual Android app.
+    DO NOT store the real API key
+    in localStorage or GitHub.
   */
 
-  localStorage.setItem("jarvisSetup", "true");
+  localStorage.setItem(
+    "jarvisSetup",
+    "true"
+  );
 
-  document.getElementById("setup").style.display = "none";
-  document.getElementById("jarvis").style.display = "block";
+  showJarvis();
 }
 
 
-// Check whether setup was completed
+function showJarvis() {
+
+  document.getElementById("setup")
+    .style.display = "none";
+
+  document.getElementById("chat")
+    .style.display = "block";
+}
+
+
+function sendMessage() {
+
+  const message =
+    document.getElementById("message").value.trim();
+
+  const reply =
+    document.getElementById("reply");
+
+  if (!message) {
+    reply.textContent =
+      "Please say something.";
+    return;
+  }
+
+  /*
+    Brain connection will be added later.
+  */
+
+  reply.textContent =
+    "J.A.R.V.I.S received: " + message;
+}
+
 
 window.onload = function() {
 
-  if (localStorage.getItem("jarvisSetup") === "true") {
+  if (
+    localStorage.getItem("jarvisSetup")
+    === "true"
+  ) {
 
-    document.getElementById("setup").style.display = "none";
-    document.getElementById("jarvis").style.display = "block";
+    showJarvis();
 
+  } else {
+
+    document.getElementById("setup")
+      .style.display = "block";
   }
 
 };
