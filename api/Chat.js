@@ -14,7 +14,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // AI connection will be added here next.
     return res.status(200).json({
       reply: "J.A.R.V.I.S received: " + message
     });
